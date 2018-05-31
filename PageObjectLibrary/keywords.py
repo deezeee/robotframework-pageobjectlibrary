@@ -114,7 +114,7 @@ class PageObjectLibraryKeywords(object):
         # true/false, or should it throw an exception?
         self.the_current_page_should_be(page_name)
 
-    def go_to_dynamic_page(self, page_name, *args, page_root = None):
+    def go_to_dynamic_page(self, page_name, *args):
         """Go to the url for the given page object.
 
         Unless explicitly provided, the URL root will be based on the
@@ -148,7 +148,7 @@ class PageObjectLibraryKeywords(object):
         if page.IS_DYNAMIC == False:
             raise Exception("go_to_dynamic_page method can not be called for static page, use go_to_page instead")
 
-        url = page_root if page_root is not None else self.se2lib.get_location()
+        url = self.se2lib.get_location()
         (scheme, netloc, path, parameters, query, fragment) = urlparse(url)
         url = "%s://%s%s" % (scheme, netloc, page.PAGE_URL % tuple(args))
 
