@@ -100,9 +100,57 @@ class PageObjectLibraryKeywords(object):
 
         page = self._get_page_object(page_name)
 
+        if page.IS_DYNAMIC:
+            raise Exception("go_to_page method can not be called for dynamic page, use go_to_dynamic_page instead")
+
         url = page_root if page_root is not None else self.se2lib.get_location()
         (scheme, netloc, path, parameters, query, fragment) = urlparse(url)
         url = "%s://%s%s" % (scheme, netloc, page.PAGE_URL)
+
+        with page._wait_for_page_refresh():
+            # self.logger.console("\ntrying to go to '%s'" % url)  # <-- Remove hashmark if you want this message on console
+            self.se2lib.go_to(url)
+        # should I be calling this keyword? Should this keyword return
+        # true/false, or should it throw an exception?
+        self.the_current_page_should_be(page_name)
+
+    def go_to_dynamic_page(self, page_name, *args, page_root = None):
+        """Go to the url for the given page object.
+
+        Unless explicitly provided, the URL root will be based on the
+        root of the current page. For example, if the current page is
+        http://www.example.com:8080 and the page object URL is
+        ``/login``, the url will be http://www.example.com:8080/login
+
+        == Example ==
+
+        Given a page object named ``ExampleLoginPage`` with the URL
+        ``/login``, and a browser open to ``http://www.example.com``, the
+        following statement will go to ``http://www.example.com/login``,
+        and place ``ExampleLoginPage`` at the front of Robot's library
+        search order.
+
+        | Go to Page    ExampleLoginPage
+
+        The effect is the same as if you had called the following three
+        keywords:
+
+        | Selenium2Library.Go To      http://www.example.com/login
+        | Import Library              ExampleLoginPage
+        | Set Library Search Order    ExampleLoginPage
+
+        Tags: selenium, page-object
+
+        """
+
+        page = self._get_page_object(page_name)
+
+        if page.IS_DYNAMIC == False:
+            raise Exception("go_to_dynamic_page method can not be called for static page, use go_to_page instead")
+
+        url = page_root if page_root is not None else self.se2lib.get_location()
+        (scheme, netloc, path, parameters, query, fragment) = urlparse(url)
+        url = "%s://%s%s" % (scheme, netloc, page.PAGE_URL % tuple(args))
 
         with page._wait_for_page_refresh():
             # self.logger.console("\ntrying to go to '%s'" % url)  # <-- Remove hashmark if you want this message on console

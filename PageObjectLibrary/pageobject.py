@@ -46,6 +46,7 @@ class PageObject(six.with_metaclass(ABCMeta, object)):
 
     PAGE_URL = None
     PAGE_TITLE = None
+    IS_DYNAMIC = False
 
     def __init__(self):
         self.logger = robot.api.logger
