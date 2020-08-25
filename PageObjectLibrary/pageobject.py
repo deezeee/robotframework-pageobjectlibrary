@@ -61,7 +61,7 @@ class PageObject(six.with_metaclass(ABCMeta, object)):
 
     @property
     def browser(self):
-        return self.se2lib._current_browser()
+        return self.se2lib.driver
 
     def __str__(self):
         return self.__class__.__name__
